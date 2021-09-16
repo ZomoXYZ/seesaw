@@ -1,0 +1,5 @@
+{
+    "$schema": "./resources/settings.schema.json",
+
+    "discordToken": ""
+}
