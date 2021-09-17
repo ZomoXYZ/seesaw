@@ -1,27 +1,30 @@
 {
-  "name": "seesaw",
-  "version": "1.0.0",
-  "description": "an interactions based discord music bot that can be self hosted",
-  "main": "./src/index.ts",
-  "scripts": {
-    "run": "ts-node ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ZomoXYZ/seesaw.git"
-  },
-  "author": "ashley zomo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ZomoXYZ/seesaw/issues"
-  },
-  "homepage": "https://github.com/ZomoXYZ/seesaw#readme",
-  "devDependencies": {
-    "ts-node": "^10.2.1",
-    "tsc": "^2.0.3"
-  },
-  "dependencies": {
-    "discord.js": "^13.1.0",
-    "youtube-dl-exec": "^1.2.6"
-  }
+    "name": "seesaw",
+    "version": "1.0.0",
+    "description": "an interactions based discord music bot that can be self hosted",
+    "main": "./src/index.ts",
+    "scripts": {
+        "run": "ts-node ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ZomoXYZ/seesaw.git"
+    },
+    "author": "ashley zomo",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ZomoXYZ/seesaw/issues"
+    },
+    "homepage": "https://github.com/ZomoXYZ/seesaw#readme",
+    "devDependencies": {
+        "@types/node": "^16.9.1",
+        "ts-node": "^10.2.1",
+        "typescript": "^4.4.3"
+    },
+    "dependencies": {
+        "@discordjs/rest": "*",
+        "discord.js": "^13.1.0",
+        "jsonschema": "^1.4.0",
+        "youtube-dl-exec": "^1.2.6"
+    }
 }
