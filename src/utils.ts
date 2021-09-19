@@ -1,30 +1,53 @@
 import * as fs from 'fs';
 import { validate } from 'jsonschema';
 
-export function fileExist(file: string, orExit?: true): boolean {
+export type Settings = {
+    discordToken: string;
+};
+
+export function fileExist(file: string): boolean {
     
     if (fs.existsSync(`./${file}`))
         return true;
     
     console.error(`Missing ${file}`);
-
-    if (orExit)
-        process.exit(1);
     
     return false;
 
 }
 
-export function readFile(file: string, orExit?: true): string|null {
+export function fileExistOrExit(file: string): void {
     
-    if (!fileExist(file, orExit))
+    let result = fileExist(file);
+
+    if (!result)
+        process.exit(1);
+
+}
+
+
+export function readFile(file: string): string|null {
+    
+    if (!fileExist(file))
         return null;
 
     return fs.readFileSync(file).toString();
 
 }
 
-export function parseJSON(string: string, orExit?: true): {}|null {
+export function readFileOrExit(file: string): string {
+    
+    let result = readFile(file);
+
+    if (!result)
+        process.exit(1);
+    
+    return result;
+
+}
+
+
+export function parseJSON<T extends {}>(string: string): T|null {
     
     try {
         return JSON.parse(string);
@@ -32,26 +55,48 @@ export function parseJSON(string: string, orExit?: true): {}|null {
         
         console.error(e);
 
-        if (orExit)
-            process.exit(1);
-
         return null;
 
     }
 
 }
 
-export function jsonSchema(jsonfile: string, schemafile: string, orExit?: true): {}|null {
+export function parseJSONOrExit<T extends {}>(string: string): T {
+    
+    let result = parseJSON<T>(string);
 
-    let json = readFile(jsonfile, orExit),
-        schema = readFile(schemafile, orExit);
+    if (!result)
+        process.exit(1);
+    
+    return result;
+
+}
+
+
+export function jsonSchema<T extends {}>(jsonfile: string, schemafile: string): T|null {
+
+    let json = parseJSON<T>(readFile(jsonfile) || "null"),
+        schema = parseJSON<T>(readFile(schemafile) || "null");
     
     if (json === null || schema === null)
         return null;
 
     if (validate(json, schema).errors.length > 0)
         return null;
+
+    let jsonParse: T = json;
     
-    return json;
+    return jsonParse;
+
+}
+
+export function jsonSchemaOrExit<T extends {}>(jsonfile: string, schemafile: string): T {
+    
+    let result = jsonSchema<T>(jsonfile, schemafile);
+
+    if (!result)
+        process.exit(1);
+    
+    return result;
 
 }

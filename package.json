@@ -4,7 +4,7 @@
     "description": "an interactions based discord music bot that can be self hosted",
     "main": "./src/index.ts",
     "scripts": {
-        "run": "ts-node ."
+        "start": "ts-node ."
     },
     "repository": {
         "type": "git",
