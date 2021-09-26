@@ -2,13 +2,12 @@
 //  i.e. who requested it, how it was requested (file/link/etc), song duration, metadata found
 // this is also where youtube-dl will be called as needed
 
-import { Snowflake } from "discord-api-types";
-import { GuildMember, User } from "discord.js";
+import { GuildMember } from "discord.js";
 
 type availableApis = "apple"|"soundcloud"|"spotify"|"youtube"; //APIs that will be supported to be able to convert links to metadata (song/album/artist)
 
 type audio = {
-    requester: Snowflake|User|GuildMember, //TODO pick one
+    requester: GuildMember,
     request: {
         time: Date,
         link: string,
