@@ -1,3 +1,5 @@
+// controls basic interaction with both node and discord
+
 import { Client, Intents } from 'discord.js';
 import { handleInteraction, registerCommands } from './slash';
 import { jsonSchemaOrExit, Settings } from './utils';
