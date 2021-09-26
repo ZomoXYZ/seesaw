@@ -4,8 +4,8 @@ import { Client, Intents } from 'discord.js';
 import { handleInteraction, registerCommands } from './slash';
 import { jsonSchemaOrExit, Settings } from './utils';
 
-const settings = jsonSchemaOrExit<Settings>('settings.json', 'resources/settings.schema.json'),
-      client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] });
+export const settings = jsonSchemaOrExit<Settings>('settings.json', 'resources/settings.schema.json');
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] });
 
 client.on('ready', client => {
     console.log(`logged in as ${client.user.username}`);
