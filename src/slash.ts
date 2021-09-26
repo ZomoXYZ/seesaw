@@ -24,6 +24,9 @@ function playCommand(vc) {
 */
 //this but with functions to create,destroy,get
 
+// or maybe i should make discordAudio.ts be a child of slash.ts instead of index.ts?
+//    ill deal with this later when i work on this file
+
 //children files may be added later idk
 //
 
