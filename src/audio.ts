@@ -9,7 +9,7 @@
 import { VoiceChannel } from "discord.js";
 import audioQueue from "./queue";
 
-export default class discordAudio {
+export default class audio {
 
     private vc: VoiceChannel;
     private queue: audioQueue = new audioQueue();
