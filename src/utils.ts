@@ -1,8 +1,15 @@
+// general utils
+
 import * as fs from 'fs';
 import { validate } from 'jsonschema';
 
 export type Settings = {
-    discordToken: string;
+    api: {
+        discordToken: string;
+    }
+    bot?: {
+        maxFileDuration?: number
+    }
 };
 
 export function fileExist(file: string): boolean {
