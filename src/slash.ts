@@ -1,3 +1,29 @@
+//parent: index.ts
+//children: queue.ts
+// in charge of slash commands (and all related data)
+// this will somehow communicate with discordAudio.ts as needed
+//    im not sure the best way to do this since the discordAudio instances will be stored in index.ts
+//    a good option may be to pass a function written in index.ts to here that will be called by the play function and will instanciate the discordAudio
+//    for example:
+/*
+*index.ts
+audioInstances = {}
+registerCommands(..., function(vc) {
+    audioInstances[vc.id] = discordAudio(vc)
+})
+
+*slash.ts
+function registerCommands(..., func) {
+    ...
+    global.createAudio = func
+}
+
+function playCommand(vc) {
+    createAudio(vc)
+}
+*/
+//this but with functions to create,destroy,get
+
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
