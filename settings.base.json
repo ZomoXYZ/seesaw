@@ -1,5 +1,7 @@
 {
     "$schema": "./resources/settings.schema.json",
 
-    "discordToken": ""
+    "apis": {
+        "discordToken": ""
+    }
 }

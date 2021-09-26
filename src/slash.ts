@@ -1,5 +1,6 @@
 //parent: index.ts
-//children: 
+//children: ?
+// ANY AND ALL DISCORD USER INTERACTION WILL EXIST EITHER WITHIN OR AS A CHILD OF THIS FILE
 // in charge of slash commands (and all related data)
 // this will somehow communicate with discordAudio.ts as needed
 //    im not sure the best way to do this since the discordAudio instances will be stored in index.ts
@@ -22,6 +23,9 @@ function playCommand(vc) {
 }
 */
 //this but with functions to create,destroy,get
+
+//children files may be added later idk
+//
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from '@discordjs/rest';
