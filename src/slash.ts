@@ -1,5 +1,5 @@
 //parent: index.ts
-//children: queue.ts
+//children: 
 // in charge of slash commands (and all related data)
 // this will somehow communicate with discordAudio.ts as needed
 //    im not sure the best way to do this since the discordAudio instances will be stored in index.ts
@@ -17,7 +17,6 @@ function registerCommands(..., func) {
     ...
     global.createAudio = func
 }
-
 function playCommand(vc) {
     createAudio(vc)
 }
