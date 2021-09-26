@@ -5,7 +5,6 @@
 import { GuildMember } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { settings } from '.';
 import { getDir } from './utils';
 const youtubedl = require('youtube-dl-exec');
 
@@ -315,7 +314,7 @@ export default class audioQueue {
 
                 this.attachFile(index, dlinfo[1]);
 
-                //return dlinfo[0];
+                return this.at(index);
             }
 
             return null;
