@@ -7,14 +7,14 @@ const settings = jsonSchemaOrExit<Settings>('settings.json', 'resources/settings
 
 client.on('ready', client => {
     console.log(`logged in as ${client.user.username}`);
-    client.guilds.cache.forEach(g => registerCommands(client.user.id, g.id, settings.discordToken));
+    client.guilds.cache.forEach(g => registerCommands(client.user.id, g.id, settings.api.discordToken));
 });
 
 client.on('interactionCreate', handleInteraction);
 
 client.on('guildCreate', g => {
     if (client && client.user)
-        registerCommands(client.user.id, g.id, settings.discordToken);
+        registerCommands(client.user.id, g.id, settings.api.discordToken);
 });
       
-client.login(settings.discordToken);
+client.login(settings.api.discordToken);
