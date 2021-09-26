@@ -2,7 +2,11 @@
 //  i.e. who requested it, how it was requested (file/link/etc), song duration, metadata found
 // this is also where youtube-dl will be called as needed
 
-import { GuildMember } from "discord.js";
+import { GuildMember } from 'discord.js';
+import * as fs from 'fs';
+import * as path from 'path';
+import { settings } from '.';
+import { getDir } from './utils';
 const youtubedl = require('youtube-dl-exec');
 
 type audio = {
@@ -18,10 +22,7 @@ type audio = {
         artist?: string,
         duration?: number
     },
-    localFile?: {//TODO this will be required of all `audio` when youtube-dl is implemented
-        isloaded: boolean,
-        file: string
-    }
+    localFile?: string
 };
 
 /* queue index input
@@ -201,6 +202,11 @@ export default class audioQueue {
             this.queue.splice(this.current+index, 1);
     }
 
+    private attachFile(index: number, filename: string) {
+        if (this.validIndex(index))
+            this.queue[this.current+index].localFile = filename;
+    }
+
     //youtube-dl
     private async _ytdlInfo(link: string) {
         link = link.trim();
@@ -251,26 +257,43 @@ export default class audioQueue {
 
     }
 
-    //TODO create a file download manager that generates filenames
+    private async _genFilename() {
+        let dir = getDir("tmpDownload");
+        
+        let fname: string;
 
-    public async _ytdlDown(link: string) {
+        do {
+
+            fname = '';
+            for (let i = 0; i < 20; i++)
+                fname += String.fromCharCode(Math.round(Math.random()*25)+65);
+
+        } while (fs.existsSync(path.join(dir, fname+'.mp3')));
+
+        return fname;
+        
+    }
+
+    public _ytdlDown(link: string): [Promise<any>,string] {
         link = link.trim();
 
-        let info = await this._ytdlInfo(link);
+        let filename = this._genFilename();
 
-        //ask file download manager first
-
-        /*return youtubedl(link, {
-            noCallHome: true,
-            noCheckCertificate: true,
-            preferFreeFormats: true,
-            youtubeSkipDashManifest: true,
-            referer: 'https://github.com/ZomoXYZ/seesaw',//TODO settings file
-            extractAudio: true,
-            audioFormat: 'mp3',
-            audioQuality: '0',
-            output: `${filename}.%(ext)s`
-        });*/
+        return [
+            youtubedl(link, {
+                noCallHome: true,
+                noCheckCertificate: true,
+                preferFreeFormats: true,
+                youtubeSkipDashManifest: true,
+                referer: 'https://github.com/ZomoXYZ/seesaw',//TODO settings file
+                extractAudio: true,
+                audioFormat: 'mp3',
+                audioQuality: '0',
+                output: `${filename}.%(ext)s`
+            }),
+            filename+'.mp3'
+        ];
+        
     }
 
     public async ytdlInfo(index: number): Promise<ytdlData|null> {
@@ -283,11 +306,20 @@ export default class audioQueue {
         return null;
     }
 
-    public async ytdlDown(index: number): Promise<any|null> {
+    public async ytdlDown(index: number): Promise<audio|null> {
         if (this.validIndex(index)) {
             let info = this.at(index);
-            if (info)
-                return await this._ytdlDown(info.request.link);
+
+            if (info) {
+                let dlinfo = this._ytdlDown(info.request.link);
+
+                this.attachFile(index, dlinfo[1]);
+
+                //return dlinfo[0];
+            }
+
+            return null;
+
         }
 
         return null;

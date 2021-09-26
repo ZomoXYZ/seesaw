@@ -20,10 +20,21 @@
                     "description": "the longest a file can be, 0 means no limit (in seconds)",
                     "type": "integer",
                     "minimum": 0
+                },
+                "dirs": {
+                    "description": "related directories (URI with implied file://)",
+                    "properties": {
+                        "tempDownload": {
+                            "description": "temp download for ytdl",
+                            "type": "string"
+                        }
+                    },
+                    "required": ["tmpDownload"]
                 }
-            }
+            },
+            "required": ["dirs"]
         }
     },
 
-    "required": ["apis"]
+    "required": ["apis", "bot"]
 }

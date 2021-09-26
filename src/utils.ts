@@ -1,14 +1,19 @@
 // general utils
 
 import * as fs from 'fs';
+import * as path from 'path';
 import { validate } from 'jsonschema';
+import { settings } from '.';
 
 export type Settings = {
     api: {
         discordToken: string;
     }
-    bot?: {
-        maxFileDuration?: number
+    bot: {
+        maxFileDuration?: number,
+        dirs: {
+            tmpDownload: string
+        }
     }
 };
 
@@ -105,5 +110,30 @@ export function jsonSchemaOrExit<T extends {}>(jsonfile: string, schemafile: str
         process.exit(1);
     
     return result;
+
+}
+
+export function getDir(type: "tmpDownload") {
+
+    let dir = '';
+
+    switch(type) {
+        case "tmpDownload":
+            dir = settings.bot.dirs.tmpDownload;
+            break;
+    }
+
+    if (/^\//g.test(dir))
+        dir = path.join(dir);
+    else
+        dir = path.join(__dirname, dir);
+
+    if (!fs.existsSync(dir))
+        fs.mkdirSync(dir);
+
+    if (!fs.lstatSync(dir).isDirectory())
+        throw `${dir} exists but is not a directory`;
+
+    return dir;
 
 }

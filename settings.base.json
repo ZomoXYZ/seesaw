@@ -3,5 +3,10 @@
 
     "apis": {
         "discordToken": ""
+    },
+    "bot": {
+        "dirs": {
+            "tmpDownload": "./tmp"
+        }
     }
 }
