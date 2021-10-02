@@ -156,6 +156,7 @@ export default class audioQueue {
 
     constructor(vc: VoiceChannel) {
         this.audio = new audiodriver(vc);
+        this.audio.join();
     }
 
     //this.current controls
@@ -282,23 +283,25 @@ export default class audioQueue {
         
     }
 
-    public _ytdlDown(link: string): [Promise<any>,string] {
+    public async _ytdlDown(link: string): Promise<[any, string]> {
         link = link.trim();
 
-        let filename = this._genFilename();
+        let filename = await this._genFilename();
+
+        let rawdata = await youtubedl(link, {
+            noCallHome: true,
+            noCheckCertificate: true,
+            preferFreeFormats: true,
+            youtubeSkipDashManifest: true,
+            referer: 'https://github.com/ZomoXYZ/seesaw',//TODO settings file
+            extractAudio: true,
+            audioFormat: 'mp3',
+            audioQuality: '0',
+            output: path.join(getDir('tmpDownload'), `${filename}.%(ext)s`)
+        });
 
         return [
-            youtubedl(link, {
-                noCallHome: true,
-                noCheckCertificate: true,
-                preferFreeFormats: true,
-                youtubeSkipDashManifest: true,
-                referer: 'https://github.com/ZomoXYZ/seesaw',//TODO settings file
-                extractAudio: true,
-                audioFormat: 'mp3',
-                audioQuality: '0',
-                output: `${filename}.%(ext)s`
-            }),
+            rawdata,
             filename+'.mp3'
         ];
         
@@ -319,7 +322,7 @@ export default class audioQueue {
             let info = this.at(index);
 
             if (info) {
-                let dlinfo = this._ytdlDown(info.request.link);
+                let dlinfo = await this._ytdlDown(info.request.link);
 
                 this.attachFile(index, dlinfo[1]);
 

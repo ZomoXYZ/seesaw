@@ -4,7 +4,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
-import { CommandInteraction, GuildMember, Interaction } from "discord.js";
+import { CommandInteraction, GuildMember, Interaction, VoiceChannel } from "discord.js";
+import audioQueue from "./queue";
 
 const builder = {
     audio: (option: any): any => { //TODO make this not "any"
@@ -43,7 +44,7 @@ const commands = [
 
     //play ======
     new SlashCommandBuilder()
-        .setName('roles')
+        .setName('play')
         .setDescription('either resume or add a song to the queue')
         .addStringOption(builder.audio)
         .addIntegerOption((option) => {
@@ -111,7 +112,7 @@ const commands = [
 ];
 
 const commands_js: { [key: string]: (interaction: CommandInteraction) => void } = {
-    play: (interaction: CommandInteraction) => {
+    play: async (interaction: CommandInteraction) => {
 
         if (interaction.member instanceof GuildMember) {
 
@@ -119,12 +120,30 @@ const commands_js: { [key: string]: (interaction: CommandInteraction) => void } 
 
             if (vc) {
                 
-                if (vc.joinable) {
+                if (vc.joinable && vc instanceof VoiceChannel) {
 
-                    interaction.reply({
-                        content: `i'll join later :)`,
+                    await interaction.deferReply({
                         ephemeral: true
-                    })
+                    });
+
+                    let queue = new audioQueue(vc); //TODO needs to be stored
+
+                    /*queue.addQueue({
+                        requester: interaction.member,
+                        request: {
+                            time: new Date(interaction.createdTimestamp),
+                            hidden: false,
+                            link: 'https://www.youtube.com/watch?v=WSeNSzJ2-Jw'
+                        }
+                    });*/
+                    let [data, fname] = await queue._ytdlDown('https://www.youtube.com/watch?v=WSeNSzJ2-Jw');
+                    console.log(data);
+                    console.log(fname);
+                    queue.audio.load(fname);
+
+                    interaction.editReply({
+                        content: `i'll join later :)`
+                    });
 
                     //TODO tell queue file to subscribe to a new voice channel
 
@@ -132,13 +151,13 @@ const commands_js: { [key: string]: (interaction: CommandInteraction) => void } 
                     interaction.reply({
                         content: `voice channel **#${vc.name}** is not able to be joined`,
                         ephemeral: true
-                    })
+                    });
 
             } else
                 interaction.reply({
                     content: `connect to a voice channel first`,
                     ephemeral: true
-                })
+                });
 
         }
 

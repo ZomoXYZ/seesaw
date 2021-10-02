@@ -126,7 +126,7 @@ export function getDir(type: "tmpDownload") {
     if (/^\//g.test(dir))
         dir = path.join(dir);
     else
-        dir = path.join(__dirname, dir);
+        dir = path.join(__dirname, '..', dir);
 
     if (!fs.existsSync(dir))
         fs.mkdirSync(dir);

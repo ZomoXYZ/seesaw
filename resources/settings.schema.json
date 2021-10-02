@@ -3,7 +3,7 @@
     "title": "settings",
     
     "properties": {
-        "apis": {
+        "api": {
             "description": "your api keys",
             "properties": {
                 "discordToken": {
@@ -36,5 +36,5 @@
         }
     },
 
-    "required": ["apis", "bot"]
+    "required": ["api", "bot"]
 }
