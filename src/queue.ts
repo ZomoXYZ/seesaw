@@ -2,9 +2,10 @@
 //  i.e. who requested it, how it was requested (file/link/etc), song duration, metadata found
 // this is also where youtube-dl will be called as needed
 
-import { GuildMember } from 'discord.js';
+import { GuildMember, VoiceChannel } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
+import audiodriver from './audiodriver';
 import { getDir } from './utils';
 const youtubedl = require('youtube-dl-exec');
 
@@ -21,7 +22,7 @@ type audio = {
         artist?: string,
         duration?: number
     },
-    localFile?: string
+    local?: string
 };
 
 /* queue index input
@@ -151,10 +152,18 @@ export default class audioQueue {
 
     private validIndex = (index: number) => index >= -this.current && index < this.queue.length - this.current;
 
+    public audio: audiodriver;
+
+    constructor(vc: VoiceChannel) {
+        this.audio = new audiodriver(vc);
+    }
+
     //this.current controls
     public next() {
         if (this.current < this.queue.length - 1)
             this.current++;
+
+        //TODO (later) auto download files when theyre close
     }
 
     public back() {
@@ -165,7 +174,7 @@ export default class audioQueue {
     /**
      * @param index index to move to, negative numbers go into the history, 0 is the current song
      */
-    public seek(index: number) {
+    public goto(index: number) {
         if (this.validIndex(index))
             this.current+= index;
     }
@@ -203,7 +212,7 @@ export default class audioQueue {
 
     private attachFile(index: number, filename: string) {
         if (this.validIndex(index))
-            this.queue[this.current+index].localFile = filename;
+            this.queue[this.current+index].local = filename;
     }
 
     //youtube-dl

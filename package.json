@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "@discordjs/rest": "*",
+        "@discordjs/voice": "^0.6.0",
         "discord.js": "^13.1.0",
         "jsonschema": "^1.4.0",
         "youtube-dl-exec": "^1.2.6"
