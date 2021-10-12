@@ -4,7 +4,7 @@
 
 // audioQueue stores the audio data and will take care of downloading audio, but discordAudio will actually play the file through discord
 
-import { AudioPlayer, createAudioPlayer, createAudioResource, entersState, getVoiceConnection, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice';
+import { AudioPlayer, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, entersState, getVoiceConnection, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice';
 import { VoiceChannel } from 'discord.js';
 import * as path from 'path';
 import { getDir } from './utils';
@@ -26,7 +26,7 @@ export default class audiodriver {
         let connection = joinVoiceChannel({
             channelId: this.vc.id,
             guildId: this.vc.guild.id,
-            adapterCreator: this.vc.guild.voiceAdapterCreator
+            adapterCreator: this.vc.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
         });
 
         connection.on(VoiceConnectionStatus.Ready, () => {
@@ -72,7 +72,5 @@ export default class audiodriver {
 
     public seek() {
     }
-
-    //link between downloaded files and vc
 
 }

@@ -22,7 +22,8 @@ type audio = {
         artist?: string,
         duration?: number
     },
-    local?: string
+    local?: string,
+    status: "none"|"downloading"|"done"
 };
 
 /* queue index input
@@ -34,7 +35,7 @@ index   file
  3       song7
  2       song6
  1       song5
- 0       song4
+ 0       song4 (current)
 -1       song3
 -2       song2
 -3       song1
@@ -164,12 +165,14 @@ export default class audioQueue {
         if (this.current < this.queue.length - 1)
             this.current++;
 
-        //TODO (later) auto download files when theyre close
+        this.dlNeeded();
     }
 
     public back() {
         if (this.current > 0)
             this.current--;
+
+        this.dlNeeded();
     }
 
     /**
@@ -178,6 +181,8 @@ export default class audioQueue {
     public goto(index: number) {
         if (this.validIndex(index))
             this.current+= index;
+
+        this.dlNeeded();
     }
 
     //this.queue controls
@@ -204,6 +209,8 @@ export default class audioQueue {
             this.queue.splice(this.current+index, 0, audio);
         else
             this.queue.push(audio);
+
+        this.dlNeeded();
     }
 
     public removeQueue(index: number) {
@@ -212,8 +219,10 @@ export default class audioQueue {
     }
 
     private attachFile(index: number, filename: string) {
-        if (this.validIndex(index))
+        if (this.validIndex(index)) {
             this.queue[this.current+index].local = filename;
+            this.queue[this.current+index].status = 'done';
+        }
     }
 
     //youtube-dl
@@ -283,7 +292,7 @@ export default class audioQueue {
         
     }
 
-    public async _ytdlDown(link: string): Promise<[any, string]> {
+    private async _ytdlDown(link: string): Promise<[any, string]> {
         link = link.trim();
 
         let filename = await this._genFilename();
@@ -317,11 +326,14 @@ export default class audioQueue {
         return null;
     }
 
-    public async ytdlDown(index: number): Promise<audio|null> {
+    private async ytdlDown(index: number): Promise<audio|null> {
         if (this.validIndex(index)) {
             let info = this.at(index);
 
-            if (info) {
+            if (info && info?.status === 'none') {
+                
+                this.queue[this.current+index].status = 'downloading';
+
                 let dlinfo = await this._ytdlDown(info.request.link);
 
                 this.attachFile(index, dlinfo[1]);
@@ -329,11 +341,14 @@ export default class audioQueue {
                 return this.at(index);
             }
 
-            return null;
-
         }
 
         return null;
+    }
+
+    private async dlNeeded(play?: boolean) {
+        await this.ytdlDown(0);
+        await this.ytdlDown(1);
     }
     
 }

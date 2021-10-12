@@ -3,7 +3,7 @@
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
+import { Routes } from 'discord-api-types';
 import { CommandInteraction, GuildMember, Interaction, VoiceChannel } from "discord.js";
 import audioQueue from "./queue";
 
@@ -39,6 +39,33 @@ const builder = {
 /leave
   leave vc
 */
+
+const Queues: Map<string, audioQueue> = new Map();
+
+async function joinVC(vc: VoiceChannel, interaction: CommandInteraction) {
+    if (vc.joinable && vc instanceof VoiceChannel) {
+
+        await interaction.deferReply({
+            ephemeral: true
+        });
+
+        let queue = new audioQueue(vc);
+        Queues.set(vc.id, queue);
+
+        interaction.editReply({
+            content: `i'll join later :)`
+        });
+
+        return queue;
+
+    } else
+        interaction.reply({
+            content: `voice channel **#${vc.name}** is not able to be joined`,
+            ephemeral: true
+        });
+
+    return null;
+}
 
 const commands = [
 
@@ -118,40 +145,21 @@ const commands_js: { [key: string]: (interaction: CommandInteraction) => void } 
 
             let vc = interaction.member.voice.channel;
 
-            if (vc) {
+            if (vc && vc instanceof VoiceChannel) {
                 
-                if (vc.joinable && vc instanceof VoiceChannel) {
+                let queue = await joinVC(vc, interaction);
 
-                    await interaction.deferReply({
-                        ephemeral: true
-                    });
-
-                    let queue = new audioQueue(vc); //TODO needs to be stored
-
-                    /*queue.addQueue({
+                if (queue)  {
+                    queue.addQueue({
                         requester: interaction.member,
                         request: {
                             time: new Date(interaction.createdTimestamp),
                             hidden: false,
                             link: 'https://www.youtube.com/watch?v=WSeNSzJ2-Jw'
-                        }
-                    });*/
-                    let [data, fname] = await queue._ytdlDown('https://www.youtube.com/watch?v=WSeNSzJ2-Jw');
-                    console.log(data);
-                    console.log(fname);
-                    queue.audio.load(fname);
-
-                    interaction.editReply({
-                        content: `i'll join later :)`
+                        },
+                        status: "none"
                     });
-
-                    //TODO tell queue file to subscribe to a new voice channel
-
-                } else
-                    interaction.reply({
-                        content: `voice channel **#${vc.name}** is not able to be joined`,
-                        ephemeral: true
-                    });
+                }
 
             } else
                 interaction.reply({
